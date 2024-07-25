@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axel Gnome</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Imposta le dimensioni del canvas per adattarsi al dispositivo
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Variabili di gioco
+        let gameState = 'menu'; // menu, playing, paused, gameOver
+        let score = 0;
+        let axel = {
+            x: canvas.width / 2,
+            y: canvas.height - 100,
+            width: 50,
+            height: 50,
+            speed: 5
+        };
+        let knights = [];
+        let powerUps = [];
+        let axes = [];
+
+        // Funzioni di disegno
+        function drawAxel() {
+            ctx.fillStyle = '#00FF00';
+            ctx.fillRect(axel.x, axel.y, axel.width, axel.height);
+        }
+
+        function drawKnights() {
+            ctx.fillStyle = '#FF0000';
+            knights.forEach(knight => {
+                ctx.fillRect(knight.x, knight.y, knight.width, knight.height);
+            });
+        }
+
+        function drawPowerUps() {
+            ctx.fillStyle = '#FFFF00';
+            powerUps.forEach(powerUp => {
+                ctx.beginPath();
+                ctx.arc(powerUp.x, powerUp.y, powerUp.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function drawAxes() {
+            ctx.fillStyle = '#FFFFFF';
+            axes.forEach(axe => {
+                ctx.fillRect(axe.x, axe.y, axe.width, axe.height);
+            });
+        }
+
+        function drawBackground() {
+            // Disegna lo sfondo scuro
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Disegna l'albero delle ciambelle (semplificato)
+            ctx.fillStyle = '#4A0E4E';
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height);
+            ctx.lineTo(canvas.width / 2 - 100, 0);
+            ctx.lineTo(canvas.width / 2 + 100, 0);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawScore() {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 30);
+        }
+
+        // Logica di gioco
+        function update() {
+            // Aggiorna posizioni e controlla collisioni
+            // ... (da implementare)
+        }
+
+        // Loop principale del gioco
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (gameState === 'playing') {
+                update();
+                drawBackground();
+                drawAxel();
+                drawKnights();
+                drawPowerUps();
+                drawAxes();
+                drawScore();
+            } else if (gameState === 'menu') {
+                drawMenu();
+            } else if (gameState === 'gameOver') {
+                drawGameOver();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function drawMenu() {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '40px Arial';
+            ctx.fillText('Axel Gnome', canvas.width / 2 - 100, canvas.height / 2);
+            ctx.font = '20px Arial';
+            ctx.fillText('Tap to Start', canvas.width / 2 - 50, canvas.height / 2 + 40);
+        }
+
+        function drawGameOver() {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '40px Arial';
+            ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
+            ctx.font = '20px Arial';
+            ctx.fillText(`Score: ${score}`, canvas.width / 2 - 40, canvas.height / 2 + 40);
+            ctx.fillText('Tap to Restart', canvas.width / 2 - 60, canvas.height / 2 + 80);
+        }
+
+        // Gestione degli input
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameState === 'menu') {
+                gameState = 'playing';
+            } else if (gameState === 'gameOver') {
+                gameState = 'menu';
+                score = 0;
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (gameState === 'playing') {
+                const touch = e.touches[0];
+                axel.x = touch.clientX - axel.width / 2;
+            }
+        });
+
+        // Avvia il gioco
+        gameLoop();
+    </script>
+</body>
+</html>
